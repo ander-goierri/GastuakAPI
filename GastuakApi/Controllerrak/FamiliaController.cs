@@ -15,8 +15,19 @@ namespace GastuakApi.Controllerrak
         {
             _familiaRepo = familiaRepo;
         }
+        
 
-        /*
+        // GET api/familia
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var familiak = _familiaRepo.GetAll();
+            return Ok(familiak);
+        }
+
+        //TODO: Eager loading-ekin arazoak dauzkat. Post beintzat sortu du baina kargatzerakoan arazoa ematen du. Begiratu ea zergatik den hau.
+
+
         // POST api/familia
         [HttpPost]
         public IActionResult SortuFamilia([FromBody] FamiliaSortuDTO dto)
@@ -35,19 +46,7 @@ namespace GastuakApi.Controllerrak
                 familiaId = familia.Id
             });
         }
-        */
 
-        // GET api/familia
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var familiak = _familiaRepo.GetAll();
-            return Ok(familiak);
-        }
-
-        //TODO: Eager loading-ekin arazoak dauzkat. Post beintzat sortu du baina kargatzerakoan arazoa ematen du. Begiratu ea zergatik den hau.
-
-        /*
         // GET api/familia/{id}
         [HttpGet("{id}")]
         public IActionResult Get(int id, bool eager = false)
@@ -59,7 +58,7 @@ namespace GastuakApi.Controllerrak
 
             return Ok(familia);
         }
-        */
+
     }
 
     public class FamiliaSortuDTO

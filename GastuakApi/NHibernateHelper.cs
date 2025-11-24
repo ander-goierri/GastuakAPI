@@ -26,21 +26,26 @@ namespace GastuakApi
                 })
                 .BuildConfiguration();
 
+            //dbBirSortu(config);
+            //dbEguneratu(config);
+           
+            return config.BuildSessionFactory();
+        }
 
+        public static void dbEguneratu(NHibernate.Cfg.Configuration config) {
+            //Eguneratu
+        
+            SchemaUpdate schemaUpdate = new SchemaUpdate(config);
+            schemaUpdate.Execute(false, true);
+            
+        }
+
+        public static void dbBirSortu(NHibernate.Cfg.Configuration config) {
             //Eguneratu
             var schemaExport = new SchemaExport(config);
             schemaExport.Drop(true, true);    // Ezabatu
             schemaExport.Create(true, true);  // Sortu
-
-            //Eguneratu
-            /*
-            SchemaUpdate schemaUpdate = new SchemaUpdate(config);
-            schemaUpdate.Execute(false, true);
-            */
-
             datuakSortu(config);
-
-            return config.BuildSessionFactory();
         }
 
         public static void datuakSortu(NHibernate.Cfg.Configuration config)
