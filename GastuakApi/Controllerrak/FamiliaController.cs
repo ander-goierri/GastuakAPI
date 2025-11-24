@@ -59,6 +59,56 @@ namespace GastuakApi.Controllerrak
             return Ok(familia);
         }
 
+        // PUT api/familia/{id}
+        [HttpPut("{id}")]
+        public IActionResult EguneratuFamilia(int id, [FromBody] FamiliaSortuDTO dto)
+        {
+            var familia = _familiaRepo.Get(id);
+            if (familia == null)
+                return NotFound(new { mezua = "Familia ez da existitzen" });
+
+            familia.Izena = dto.Izena;
+
+            _familiaRepo.Update(familia);
+
+            return Ok(new { mezua = "Familia eguneratuta" });
+        }
+
+        public class FamiliaPatchDTO
+        {
+            public string? Izena { get; set; }
+        }
+
+        // PATCH api/familia/{id}
+        [HttpPatch("{id}")]
+        public IActionResult EguneratuZatia(int id, [FromBody] FamiliaPatchDTO dto)
+        {
+            var familia = _familiaRepo.Get(id);
+            if (familia == null)
+                return NotFound(new { mezua = "Familia ez da existitzen" });
+
+            if (!string.IsNullOrWhiteSpace(dto.Izena))
+                familia.Izena = dto.Izena;
+
+            _familiaRepo.Update(familia);
+
+            return Ok(new { mezua = "Familia zati batean eguneratuta" });
+        }
+
+        // DELETE api/familia/{id}
+        [HttpDelete("{id}")]
+        public IActionResult EzabatuFamilia(int id)
+        {
+            var familia = _familiaRepo.Get(id);
+            if (familia == null)
+                return NotFound(new { mezua = "Familia ez da existitzen" });
+
+            _familiaRepo.Delete(familia);
+
+            return Ok(new { mezua = "Familia ezabatua" });
+        }
+
+
     }
 
     public class FamiliaSortuDTO

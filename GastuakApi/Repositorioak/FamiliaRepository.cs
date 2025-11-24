@@ -39,6 +39,27 @@ namespace GastuakApi.Repositorioak
             using var session = _sessionFactory.OpenSession();
             return session.Query<Familia>().ToList();
         }
+
+        public void Update(Familia familia)
+        {
+            using var session = _sessionFactory.OpenSession();
+            using var tx = session.BeginTransaction();
+
+            session.Update(familia);
+
+            tx.Commit();
+        }
+
+        public void Delete(Familia familia)
+        {
+            using var session = _sessionFactory.OpenSession();
+            using var tx = session.BeginTransaction();
+
+            session.Delete(familia);
+
+            tx.Commit();
+        }
+
     }
-   
+
 }
