@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "GastuakApi.Controllerrak.FamiliaController",
+    "Method": "GetAll",
+    "RelativePath": "api/Familia",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
