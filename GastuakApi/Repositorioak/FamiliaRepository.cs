@@ -26,9 +26,11 @@ namespace GastuakApi.Repositorioak
         {
             using var session = _sessionFactory.OpenSession();
             Familia f = session.Get<Familia>(id);
+            /*
             if (eager) {
                 NHibernateUtil.Initialize(f.Erabiltzaileak);
             }
+            */
             return f;
         }
 

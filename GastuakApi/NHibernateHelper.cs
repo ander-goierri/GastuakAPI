@@ -1,8 +1,10 @@
 ﻿using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using GastuakApi.Mapeoak;
+using GastuakApi.Modeloak;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace GastuakApi
 {
@@ -20,18 +22,39 @@ namespace GastuakApi
                     .ConnectionString("Server=localhost;Port=3310;Database=gastuak;Uid=root;Pwd=;"))
                 .Mappings(m =>
                 {
-                    m.FluentMappings.AddFromAssemblyOf<ErabiltzaileaMap>();
                     m.FluentMappings.AddFromAssemblyOf<FamiliaMap>();
                 })
                 .BuildConfiguration();
 
-            // CREA / ACTUALIZA LAS TABLAS AUTOMÁTICAMENTE
-            new SchemaUpdate(config).Execute(false, true);
 
-            // Si quieres recrear todo:
-            // new SchemaExport(config).Create(false, true);
+            //Eguneratu
+            var schemaExport = new SchemaExport(config);
+            schemaExport.Drop(true, true);    // Ezabatu
+            schemaExport.Create(true, true);  // Sortu
+
+            //Eguneratu
+            /*
+            SchemaUpdate schemaUpdate = new SchemaUpdate(config);
+            schemaUpdate.Execute(false, true);
+            */
+
+            datuakSortu(config);
 
             return config.BuildSessionFactory();
+        }
+
+        public static void datuakSortu(NHibernate.Cfg.Configuration config)
+        {
+            // HEMEN: Datu hasierakoak txertatu
+            using (var session = config.BuildSessionFactory().OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                session.Save(new Familia { Izena = "Tolosa" });
+                session.Save(new Familia { Izena = "Sebastian" });
+                session.Save(new Familia { Izena = "Toledo" });
+
+                transaction.Commit();
+            }
         }
     }
 }

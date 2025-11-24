@@ -11,8 +11,7 @@ namespace GastuakApi.Controllerrak
         private readonly FamiliaRepository _familiaRepo;
 
         public FamiliaController(
-            FamiliaRepository familiaRepo,
-            ErabiltzaileaRepostory erabRepo)
+            FamiliaRepository familiaRepo)
         {
             _familiaRepo = familiaRepo;
         }
