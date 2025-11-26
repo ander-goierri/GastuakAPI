@@ -18,13 +18,13 @@ namespace GastuakApi.Mapeoak
             Map(x => x.SarreraRekurrentea).Column("sarrera_rekurrentea");
 
             Map(x => x.KontuNagusia_id).Column("kontu_nagusia_id");
-            /*
+            
             HasManyToMany(x => x.Familiak)
                 .Table("erabiltzailea_familia")
                 .ParentKeyColumn("erabiltzailea_id")
                 .ChildKeyColumn("familia_id")
                 .Cascade.All();
-            */
+
         }
     }
 }

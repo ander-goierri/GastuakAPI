@@ -26,8 +26,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton(NHibernateHelper.SessionFactory);
 builder.Services.AddTransient<FamiliaRepository>();
- 
+builder.Services.AddTransient<ErabiltzaileaRepository>();
+
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -42,6 +45,7 @@ app.UseCors();
 
 app.UseAuthorization();
 
+app.UseMiddleware<NHibernateSessionMiddleware>();
 app.MapControllers();
 
 app.Run();

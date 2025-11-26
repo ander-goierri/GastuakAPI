@@ -13,14 +13,14 @@ namespace GastuakApi.Mapeoak
 
             Map(x => x.Izena).Column("izena");
 
-            /*
             HasManyToMany(x => x.Erabiltzaileak)
                 .Table("erabiltzailea_familia")
                 .ParentKeyColumn("familia_id")
                 .ChildKeyColumn("erabiltzailea_id")
                 .Inverse()
+                .LazyLoad()
                 .Cascade.All();
-            */
+
 
         }
     }
