@@ -25,13 +25,12 @@ namespace GastuakApi.Repositorioak
         public Familia? Get(int id, bool eager = false)
         {
             using var session = _sessionFactory.OpenSession();
-            Familia f = session.Get<Familia>(id);
-            /*
-            if (eager) {
-                NHibernateUtil.Initialize(f.Erabiltzaileak);
-            }
-            */
-            return f;
+            var query = session.Query<Familia>()
+                .Where(x => x.Id == id);
+
+            var familia = query.SingleOrDefault();
+            return familia;
+
         }
 
         public IList<Familia> GetAll()
