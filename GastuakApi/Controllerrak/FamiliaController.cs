@@ -1,5 +1,6 @@
 ﻿using GastuakApi.Repositorioak;
 using GastuakApi.Modeloak;
+using GastuakApi.DTOak;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GastuakApi.Controllerrak
@@ -19,13 +20,44 @@ namespace GastuakApi.Controllerrak
 
         // GET api/familia
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll(bool eager = false)
         {
             var familiak = _familiaRepo.GetAll();
-            return Ok(familiak);
-        }
 
-        //TODO: Eager loading-ekin arazoak dauzkat. Post beintzat sortu du baina kargatzerakoan arazoa ematen du. Begiratu ea zergatik den hau.
+            // Creamos la lista de DTOs
+            var familiakDto = new List<FamiliaDto>();
+
+            foreach (var familia in familiak)
+            {
+                if (eager)
+                {
+                    familiakDto.Add(new FamiliaDto
+                    {
+                        Id = familia.Id,
+                        Izena = familia.Izena,
+                        Erabiltzaileak = familia.Erabiltzaileak
+                            .Select(e => new ErabiltzaileaDto
+                            {
+                                Id = e.Id,
+                                Izena = e.Izena,
+                                Abizena = e.Abizena
+                            })
+                            .ToList()
+                    });
+                }
+                else
+                {
+                    // LAZY: no incluir usuarios
+                    familiakDto.Add(new FamiliaDto
+                    {
+                        Id = familia.Id,
+                        Izena = familia.Izena
+                    });
+                }
+            }
+
+            return Ok(familiakDto);
+        }
 
 
         // POST api/familia
@@ -52,11 +84,36 @@ namespace GastuakApi.Controllerrak
         public IActionResult Get(int id, bool eager = false)
         {
             var familia = _familiaRepo.Get(id, eager);
+            var familiaDto = new FamiliaDto { };
 
             if (familia == null)
                 return NotFound(new { mezua = "Familia ez da existitzen" });
+            if (eager) {
+                familiaDto = new FamiliaDto
+                {
+                    Id = familia.Id,
+                    Izena = familia.Izena,
+                    Erabiltzaileak = familia.Erabiltzaileak
+                    .Select(e => new ErabiltzaileaDto
+                    {
+                        Id = e.Id,
+                        Izena = e.Izena,
+                        Abizena = e.Abizena
+                    })
+                .ToList()
+                };
+            }else
+            {
+                familiaDto = new FamiliaDto
+                {
+                    Id = familia.Id,
+                    Izena = familia.Izena
+                };
 
-            return Ok(familia);
+            }
+  
+
+            return Ok(familiaDto);
         }
 
         // PUT api/familia/{id}
@@ -72,11 +129,6 @@ namespace GastuakApi.Controllerrak
             _familiaRepo.Update(familia);
 
             return Ok(new { mezua = "Familia eguneratuta" });
-        }
-
-        public class FamiliaPatchDTO
-        {
-            public string? Izena { get; set; }
         }
 
         // PATCH api/familia/{id}
@@ -115,5 +167,11 @@ namespace GastuakApi.Controllerrak
     {
         public string Izena { get; set; }
         public List<int> ErabiltzaileIds { get; set; } = new();
+    }
+
+
+    public class FamiliaPatchDTO
+    {
+        public string? Izena { get; set; }
     }
 }

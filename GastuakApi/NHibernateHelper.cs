@@ -24,11 +24,15 @@ namespace GastuakApi
                 {
                     m.FluentMappings.AddFromAssemblyOf<FamiliaMap>();
                 })
+                .ExposeConfiguration(cfg =>
+                {
+                    cfg.SetProperty("current_session_context_class", "async_local");
+                })
                 .BuildConfiguration();
 
             //dbBirSortu(config);
             //dbEguneratu(config);
-           
+
             return config.BuildSessionFactory();
         }
 

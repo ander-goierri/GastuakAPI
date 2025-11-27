@@ -5,57 +5,51 @@ namespace GastuakApi.Repositorioak
 { 
     public class FamiliaRepository
     {
-        private readonly ISessionFactory _sessionFactory;
+        private readonly NHibernate.ISession _session;
 
         public FamiliaRepository(ISessionFactory sessionFactory)
         {
-            _sessionFactory = sessionFactory;
+            _session = sessionFactory.GetCurrentSession();
         }
 
         public void Add(Familia familia)
         {
-            using var session = _sessionFactory.OpenSession();
-            using var tx = session.BeginTransaction();
+            using var tx = _session.BeginTransaction();
 
-            session.Save(familia);
+            _session.Save(familia);
 
             tx.Commit();
         }
 
         public Familia? Get(int id, bool eager = false)
         {
-            using var session = _sessionFactory.OpenSession();
-            Familia f = session.Get<Familia>(id);
-            /*
-            if (eager) {
-                NHibernateUtil.Initialize(f.Erabiltzaileak);
-            }
-            */
-            return f;
+            var query = _session.Query<Familia>()
+                .Where(x => x.Id == id);   
+
+            var familia = query.SingleOrDefault();
+            return familia;
+
         }
 
         public IList<Familia> GetAll()
         {
-            using var session = _sessionFactory.OpenSession();
-            return session.Query<Familia>().ToList();
+            return _session.Query<Familia>().ToList();
         }
 
         public void Update(Familia familia)
         {
-            using var session = _sessionFactory.OpenSession();
-            using var tx = session.BeginTransaction();
+            using var tx = _session.BeginTransaction();
 
-            session.Update(familia);
+            _session.Update(familia);
 
             tx.Commit();
         }
 
         public void Delete(Familia familia)
         {
-            using var session = _sessionFactory.OpenSession();
-            using var tx = session.BeginTransaction();
+            using var tx = _session.BeginTransaction();
 
-            session.Delete(familia);
+            _session.Delete(familia);
 
             tx.Commit();
         }
