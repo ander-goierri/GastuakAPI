@@ -24,7 +24,6 @@ namespace GastuakApi.Controllerrak
         {
             var familiak = _familiaRepo.GetAll();
 
-            // Creamos la lista de DTOs
             var familiakDto = new List<FamiliaDto>();
 
             foreach (var familia in familiak)
@@ -47,7 +46,6 @@ namespace GastuakApi.Controllerrak
                 }
                 else
                 {
-                    // LAZY: no incluir usuarios
                     familiakDto.Add(new FamiliaDto
                     {
                         Id = familia.Id,
