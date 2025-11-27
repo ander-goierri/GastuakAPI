@@ -23,6 +23,7 @@ namespace GastuakApi.Mapeoak
                 .Table("erabiltzailea_familia")
                 .ParentKeyColumn("erabiltzailea_id")
                 .ChildKeyColumn("familia_id")
+                .LazyLoad()
                 .Cascade.All();
 
         }
