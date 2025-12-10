@@ -31,6 +31,13 @@ namespace GastuakApi.Repositorioak
 
         }
 
+        public List<Erabiltzailea> GetByIds(List<int> ids)
+        {
+                return _session.Query<Erabiltzailea>()
+                    .Where(x => ids.Contains(x.Id))
+                    .ToList();
+        }
+
         public IList<Erabiltzailea> GetAll()
         {
             return _session.Query<Erabiltzailea>().ToList();
