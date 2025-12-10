@@ -10,11 +10,14 @@ namespace GastuakApi.Controllerrak
     public class FamiliaController: ControllerBase
     {
         private readonly FamiliaRepository _familiaRepo;
+        private readonly ErabiltzaileaRepository _erabiltzaileaRepo;
 
         public FamiliaController(
-            FamiliaRepository familiaRepo)
+            FamiliaRepository familiaRepo,
+            ErabiltzaileaRepository erabiltzaileaRepo)
         {
             _familiaRepo = familiaRepo;
+            _erabiltzaileaRepo = erabiltzaileaRepo;
         }
         
 
@@ -57,26 +60,6 @@ namespace GastuakApi.Controllerrak
             return Ok(familiakDto);
         }
 
-
-        // POST api/familia
-        [HttpPost]
-        public IActionResult SortuFamilia([FromBody] FamiliaSortuDTO dto)
-        {
-            // Familia sortu
-            var familia = new Familia
-            {
-                Izena = dto.Izena
-            };
-
-            _familiaRepo.Add(familia);
-
-            return Ok(new
-            {
-                mezua = "Familia sortuta",
-                familiaId = familia.Id
-            });
-        }
-
         // GET api/familia/{id}
         [HttpGet("{id}")]
         public IActionResult Get(int id, bool eager = false)
@@ -86,7 +69,8 @@ namespace GastuakApi.Controllerrak
 
             if (familia == null)
                 return NotFound(new { mezua = "Familia ez da existitzen" });
-            if (eager) {
+            if (eager)
+            {
                 familiaDto = new FamiliaDto
                 {
                     Id = familia.Id,
@@ -100,7 +84,8 @@ namespace GastuakApi.Controllerrak
                     })
                 .ToList()
                 };
-            }else
+            }
+            else
             {
                 familiaDto = new FamiliaDto
                 {
@@ -109,10 +94,94 @@ namespace GastuakApi.Controllerrak
                 };
 
             }
-  
 
             return Ok(familiaDto);
         }
+
+
+        // POST api/familia
+        [HttpPost]
+        public IActionResult SortuFamilia([FromBody] FamiliaSortuDTO dto)
+        {
+            // Familia sortu
+            var familia = new Familia
+            {
+                Izena = dto.Izena
+            };
+
+            IList<Erabiltzailea> erabZerrenda = [];
+
+            //Sartutako erabiltzaileak bilatzen dira eta familiari gehitzen zaizkio
+            foreach (var erabiltzaileId in dto.ErabiltzaileIds) {
+                Erabiltzailea erab = _erabiltzaileaRepo.Get(erabiltzaileId);
+                erabZerrenda.Add(erab);
+            }
+
+            familia.Erabiltzaileak = erabZerrenda;
+
+            _familiaRepo.Add(familia);
+
+            return Ok(new
+            {
+                mezua = "Familia sortuta",
+                familiaId = familia.Id
+            });
+        }
+
+
+        // PATCH api/familia/{id}/gehituErabiltzaileak
+        [HttpPatch("{id}/gehituErabiltzaileak")]
+        public IActionResult AddErabiltzaileak(int id, [FromBody] FamiliaAddErabiltzaileakDTO dto)
+        {
+            var familia = _familiaRepo.Get(id, eager: true);
+            if (familia == null)
+                return NotFound(new { mezua = "Familia ez da existitzen" });
+
+            // Obtener los usuarios
+            var erabiltzaileak = _erabiltzaileaRepo.GetByIds(dto.ErabiltzaileIds);
+
+            if (!erabiltzaileak.Any())
+                return BadRequest(new { mezua = "Ez da aurkitu erabiltzailerik" });
+
+            foreach (var e in erabiltzaileak)
+            {
+                if (!familia.Erabiltzaileak.Contains(e))
+                    familia.Erabiltzaileak.Add(e);
+            }
+
+            _familiaRepo.Update(familia);
+
+            return Ok(new { mezua = "Erabiltzaileak gehitu dira familiara" });
+        }
+
+        // PATCH api/familia/{id}/gehituErabiltzaileak
+        [HttpPatch("{id}/kenduErabiltzaileak")]
+        public IActionResult RemoveErabiltzaileak(int id, [FromBody] FamiliaAddErabiltzaileakDTO dto)
+        {
+            var familia = _familiaRepo.Get(id, eager: true);
+            if (familia == null)
+                return NotFound(new { mezua = "Familia ez da existitzen" });
+
+            // Obtener los usuarios
+            var erabiltzaileak = _erabiltzaileaRepo.GetByIds(dto.ErabiltzaileIds);
+
+            if (!erabiltzaileak.Any())
+                return BadRequest(new { mezua = "Ez da aurkitu erabiltzailerik" });
+
+            foreach (var e in erabiltzaileak)
+            {
+                if (!familia.Erabiltzaileak.Contains(e))
+                    familia.Erabiltzaileak.Remove(e);
+            }
+
+            _familiaRepo.Update(familia);
+
+            return Ok(new { mezua = "Erabiltzaileak gehitu dira familiara" });
+        }
+
+
+        //TODO: 1- bi ruta familiarrak gehitu eta familiarrak kentzeko
+        //TODO: 2- put eta patch-ak eguneratu
 
         // PUT api/familia/{id}
         [HttpPut("{id}")]
@@ -171,5 +240,9 @@ namespace GastuakApi.Controllerrak
     public class FamiliaPatchDTO
     {
         public string? Izena { get; set; }
+    }
+    public class FamiliaAddErabiltzaileakDTO
+    {
+        public List<int> ErabiltzaileIds { get; set; } = new();
     }
 }
