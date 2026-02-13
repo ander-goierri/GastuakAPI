@@ -1,38 +1,45 @@
 using GastuakApi;
 using GastuakApi.Repositorioak;
 
+/// <summary>
+/// API aplikazioaren abiarazpena eta middleware/zerbitzuen konfigurazioa.
+/// </summary>
+/// <remarks>
+/// Hemen konfiguratzen dira:
+/// - CORS politika (frontend-etik deitzeko)
+/// - Swagger (garapen ingurunean)
+/// - NHibernate (SessionFactory + middleware-a)
+/// - Controller mapaketa
+/// </remarks>
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-// CORS konfigurazioa gehitu => Web-etik errorea ez emateko
+// CORS konfigurazioa (frontend-etik deitzeko)
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .AllowAnyOrigin()     //.WithOrigins("http://localhost:8000") Jakiteko zein IPtatik etorri daitekeen
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger (OpenAPI)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// DI: NHibernate eta repositorioak
 builder.Services.AddSingleton(NHibernateHelper.SessionFactory);
 builder.Services.AddTransient<FamiliaRepository>();
 builder.Services.AddTransient<ErabiltzaileaRepository>();
 
-
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
+// Garapen ingurunean Swagger aktibatu
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,11 +48,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(); 
+app.UseCors();
 
 app.UseAuthorization();
 
+// NHibernate saioa request bakoitzean kudeatzeko middleware-a
 app.UseMiddleware<NHibernateSessionMiddleware>();
+
 app.MapControllers();
 
 app.Run();

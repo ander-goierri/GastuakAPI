@@ -3,6 +3,14 @@ using GastuakApi.Modeloak;
 
 namespace GastuakApi.Mapeoak
 {
+    /// <summary>
+    /// <see cref="Erabiltzailea"/> entitatearen eta datu-baseko "erabiltzaileak" taularen arteko
+    /// Fluent NHibernate mapaketa definitzen du.
+    /// </summary>
+    /// <remarks>
+    /// Klase honek propietate bakoitza zein zutaberekin lotzen den eta
+    /// familiakrekiko many-to-many erlazioa nola kudeatzen den zehazten du.
+    /// </remarks>
     public class ErabiltzaileaMap : ClassMap<Erabiltzailea>
     {
         public ErabiltzaileaMap()
@@ -25,7 +33,6 @@ namespace GastuakApi.Mapeoak
                 .ChildKeyColumn("familia_id")
                 .LazyLoad()
                 .Cascade.All();
-
         }
     }
 }
