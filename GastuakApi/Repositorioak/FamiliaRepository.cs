@@ -18,6 +18,10 @@ namespace GastuakApi.Repositorioak
         {
             _session = sessionFactory.GetCurrentSession();
         }
+        public FamiliaRepository()
+        {
+            _session = null;
+        }
 
         /// <summary>
         /// Familia berri bat gordetzen du.

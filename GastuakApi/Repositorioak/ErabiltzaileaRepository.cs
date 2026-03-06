@@ -18,6 +18,9 @@ namespace GastuakApi.Repositorioak
         {
             _session = sessionFactory.GetCurrentSession();
         }
+        public ErabiltzaileaRepository()
+        {
+        }
 
         /// <summary>
         /// Erabiltzaile berri bat gordetzen du.
